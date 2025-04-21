@@ -1,0 +1,56 @@
+plugins {
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.jetbrains.kotlin.android)
+}
+
+android {
+    namespace 'com.rafael.playblowplugin'
+    compileSdk 34
+
+    defaultConfig {
+        minSdk 24
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}
+
+dependencies {
+
+    implementation libs.androidx.core.ktx
+    implementation libs.androidx.appcompat
+    implementation libs.material
+    //implementation fileTree(dir: 'A:\\2023.1.18f1\\Editor\\Data\\PlaybackEngines\\AndroidPlayer\\Source\\com\\unity3d\\player', include: ['*.aar', '*.jar'], exclude: [])
+    implementation fileTree(dir: 'A:\\2023.1.18f1\\Editor\\Data\\PlaybackEngines\\AndroidPlayer\\Variations\\mono\\Development\\Classes', include: ['*.aar', '*.jar'], exclude: [])
+    testImplementation libs.junit
+    androidTestImplementation libs.androidx.junit
+    androidTestImplementation libs.androidx.espresso.core
+}
+
+task deleteJar(type: Delete){
+    delete 'libs/blePlugin.jar'
+}
+
+task createJar(type: Copy) {
+    from("build/intermediates/aar_main_jar/release/syncReleaseLibJars/") {
+        include("classes.jar")
+    }
+    into("libs")
+    rename("classes.jar", "UnityBLEPlugin.jar")
+}
+
+createJar.dependsOn(deleteJar, build)
